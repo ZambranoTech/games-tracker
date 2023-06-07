@@ -322,6 +322,7 @@ import { reactive } from "vue";
 import Cookies from "js-cookie";
 import moment from "moment";
 import { Modal } from "flowbite";
+import navigationCount from "../logica/navigationCount";
 
 
 export default {
@@ -429,10 +430,16 @@ export default {
         .then((response) => {
           console.log(response.data);
           if (response.data == "OK" ) {
+            this.toggleEliminarModal();
+            // Acceder al contador
+            const count = navigationCount.count;
+            if (count > 1) {
+              this.$router.go(-1);
+            } else {
             const isLoggedIn = Cookies.get("isLoggedIn");
             const id = isLoggedIn ? JSON.parse(isLoggedIn).id : 1;
-            this.toggleEliminarModal();
             this.$router.replace({ name: 'profile', params: { id } });
+            }
           }
         })
         .catch((error) => {

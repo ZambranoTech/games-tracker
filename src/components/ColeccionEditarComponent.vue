@@ -326,6 +326,7 @@
 import axios from "axios";
 import { reactive } from "vue";
 import Cookies from "js-cookie";
+import navigationCount from "../logica/navigationCount";
 
 
 export default {
@@ -496,6 +497,8 @@ contarCaracteresDescripcion(event) {
       return juego.id;
       }).reverse();
       
+      const count = navigationCount.count;
+      const id = this.$route.params;
 
       if (idsJuegosEnColeccionString !== idsQueEstabanEnColeccionString) {
         this.guardarJuegos(idsAlReves).then(() => {
@@ -507,7 +510,11 @@ contarCaracteresDescripcion(event) {
             this.descripcion_coleccion = this.descripcion;
           }
           this.guardarInfoBasicaColeccion().then(() => {
-        this.$router.replace({ name: 'collection', params: {id: this.$route.params.id} });
+            if (count > 1) 
+              this.$router.go(-1);
+             else 
+            this.$router.replace({ name: 'collection', params: { id } });
+            
         });
         });
       } else {
@@ -515,13 +522,19 @@ contarCaracteresDescripcion(event) {
         this.nombre_coleccion = this.infoColeccion[0].nombre;
         this.descripcion_coleccion = null;
         this.guardarInfoBasicaColeccion().then(() => {
-        this.$router.replace({ name: 'collection', params: {id: this.$route.params.id} });
+          if (count > 1) 
+              this.$router.go(-1);
+             else 
+            this.$router.replace({ name: 'collection', params: { id } });
         });
       } else {
         this.nombre_coleccion = this.nombre;
         this.descripcion_coleccion = this.descripcion;
         this.guardarInfoBasicaColeccion().then(() => {
-        this.$router.replace({ name: 'collection', params: {id: this.$route.params.id} });
+          if (count > 1) 
+              this.$router.go(-1);
+             else 
+            this.$router.replace({ name: 'collection', params: { id } });
         });
       }
       }
@@ -579,7 +592,7 @@ contarCaracteresDescripcion(event) {
           // Manejar la respuesta del servidor
           if (response.data === "OK") {
             // se ha podido modificar :)
-            console.log("modificado");
+            console.log("agregado");
           } else {
             // Las credenciales son incorrectas
             console.log("error no se pudo editar");

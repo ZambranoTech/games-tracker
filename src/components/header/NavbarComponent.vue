@@ -208,11 +208,15 @@
                 >
               </li>
               <li>
-                <a
-                  href="#"
+                <router-link
+                  :to="{
+                    name: 'collections',
+                    params: {
+                      id: this.usuario && this.usuario.id ? this.usuario.id : 1,
+                    },
+                  }"
                   class="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white"
-                  >Mis colecciones</a
-                >
+                  >Mis colecciones</router-link>
               </li>
               <li>
                 <p
@@ -373,14 +377,7 @@
             <a
               href="#"
               class="block py-2 pl-3 pr-4 rounded md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent border-gray-700"
-              >Mis colecciones</a
-            >
-          </li>
-          <li>
-            <a
-              href="#"
-              class="block py-2 pl-3 pr-4 rounded md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent border-gray-700"
-              >Busqueda Avanzada</a
+              >Social</a
             >
           </li>
           <li>

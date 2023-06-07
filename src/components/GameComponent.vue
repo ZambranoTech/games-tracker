@@ -139,17 +139,18 @@ const activeTab = ref("first");
           </tab>
           <tab name="second" title="Añadir a">
             Elige una colección
-            <VueMultiselect :custom-label="customLabel" class="cursor-pointer text-gray-600" v-model="selectedOption" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" :allow-empty="false" @select="seleccionarOpcion">
-              <template v-slot="{ option }">
-    <img :src="option.imagen" alt="Option Image" class="option-image" />
-    <span v-html="option.label"></span>
-  </template>
+            <VueMultiselect :custom-label="customLabel" class="cursor-pointer text-gray-600" v-model="selectedOption" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" :allow-empty="false" @select="seleccionarOpcion" @click="comprobarJuegoEnColeccionPersonalizada()">
   <template v-slot:option="{ option }">
-    <img :src="option.imagen" alt="Option Image2" class="option-image" />
-    <span v-html="option.label"></span>
+    <div class="flex flex-nowrap">
+      <div>
+    <img :src="option.imagen" alt="Option Image2" class="option-image  min-w-32 object-cover w-32 h-20" />
+    <span v-html="option.nombre"></span>
+  </div>
+  <font-awesome-icon icon="check" class="mt-12 ms-2 invisible" :id="'check' + option.id "/>
+    </div>
   </template>
             </VueMultiselect>
-            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-2">Nueva coleccion</button>
+            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-2" @click="toggleColeccionModal">Nueva coleccion</button>
 
 </tab>
           <tab name="third" title="Compartir"> Lorem... </tab>
@@ -158,9 +159,9 @@ const activeTab = ref("first");
           class="valoraciones flex flex-wrap bg-gray-950 ms-4 mt-2 p-2 border-l-2 border-red-500 border-solid lg:h-48"
         >
           <div class="app_rating text-center">
-            <div class="circle_app_rating m-auto">{{this.nota_rating}}</div>
+            <div class="circle_app_rating m-auto">{{nota_rating}}</div>
             <p>
-              Basado en {{ this.valoraciones.length? this.valoraciones.length: 0 }} <br />
+              Basado en {{ valoraciones && valoraciones.length? valoraciones.length: 0 }} <br />
               reseñas de miembros
             </p>
           </div>
@@ -386,9 +387,9 @@ const activeTab = ref("first");
     </div>
     <div
       v-if="
-        this.valoraciones &&
-        this.valoraciones.length &&
-        this.valoraciones.length > 0
+        valoraciones &&
+        valoraciones.length &&
+        valoraciones.length > 0
       "
       class="md:w-1/2 mx-auto mt-8 p-3"
     >
@@ -839,6 +840,115 @@ const activeTab = ref("first");
     </div>
   </div>
 
+  <!--Modal para agregar nueva coleccion-->
+  <div
+    id="coleccion-modal"
+    tabindex="-1"
+    aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    data-modal-backdrop="static"
+  >
+  <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-gray-800 rounded-lg shadow dark:bg-gray-700">
+        <button
+          type="button"
+          class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+          @click="toggleColeccionModal"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span class="sr-only">Cerrar modal</span>
+        </button>
+        <div class="p-6">
+          <h3 class="mb-5 text-lg font-normal text-gray-200 dark:text-gray-40 text-center">
+            Crear Coleccion
+          </h3>
+          <div class="-mx-3">
+        <div class="px-3 mb-5">
+          <label for="" class="text-xs font-semibold px-1">Nombre</label>
+          <div class="flex text-gray-900">
+            <div
+              class="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center mx-auto"
+            >
+              <font-awesome-icon icon="fa-solid fa-gamepad" />
+            </div>
+            <input
+              type="text"
+              class="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+              placeholder="Escriba un nombre"
+              required
+              v-model="nombre_coleccion"
+              maxlength="30"
+              :disabled="desactivar_nombre"
+              id="inputNombre"
+            />
+          </div>
+          <div id="error-message-nombre" class="text-red-500 hidden"></div>
+        </div>
+        <div>
+          <div class="px-3 mb-5">
+            <label
+              for="message"
+              class="block mb-2 text-sm font-medium text-white"
+              >Descripción</label
+            >
+            <textarea
+              id="message"
+              rows="4"
+              v-model="descripcion_coleccion"
+              :disabled="desactivar_descripcion"
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Deja tu descripción, si tu quieres"
+              maxlength="300"
+              @input="contarCaracteresDescripcion"
+            ></textarea>
+            <span class="text-white text-sm"
+                    >{{ characterCount2 }}/300 caracteres</span
+                  >
+          </div>
+        </div>
+        </div>
+        <div class="flex -mx-3 mb-3">
+        <div class="w-full px-2 pr-20 mb-5">
+          <label for="" class="text-xs font-semibold px-1"
+            >Imagen de Coleccion</label
+          >
+          <div class="flex">
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              @change="handleImageChange"
+            />
+          </div>
+          <img
+            id="previewImage"
+            class="bg-black max-h-[200px] max-w-[290px] mt-2 md:px-0 md:max-w-md rounded-lg shadow-xl dark:shadow-gray-800"
+            :src="selectedImage"
+            alt="image description"
+          />
+        </div>
+      </div>
+      <button type="button" class="focus:outline-none text-white w-full bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-2" @click="agregarColeccionPersonalizada()">Agregar Juego a nueva Coleccion</button>
+
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+
   <!--modal para eliminar la reseña-->
   <div
     id="eliminar-modal"
@@ -961,6 +1071,11 @@ export default {
       isMultiLine: 1,
       selectedOption: '',
       options: [],
+      coleccionesPersonalizadas: [],      
+      modal_coleccion: '',
+      characterCount2: 0,
+      foto_coleccion: '',
+      selectedImage: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top',
     };
   },
 
@@ -997,7 +1112,11 @@ export default {
         JSON.parse(Cookies.get("isLoggedIn")).id,
         this.$route.params.id
       );
-    this.conseguirColeccionesPersonalizadas();
+    this.conseguirColeccionesPersonalizadas().then(() => {
+             
+      this.comprobarJuegoEnColeccionPersonalizada();
+      
+    });
     this.conseguirValoraciones(this.$route.params.id);
 
 
@@ -1005,6 +1124,7 @@ export default {
     this.configurarGaleriaModal();
     this.configurarValorarModal();
     this.configurarEliminarModal();
+    this.configurarColeccionModal();
     this.comprobarColeccionesPredeterminadas();
     
     
@@ -1017,8 +1137,124 @@ export default {
       const response = await this.$http.get(url);
       this.game = response.data;
     },
+    
+    async agregarColeccionPersonalizada() {
+      this.saveImageToDatabase();
+      // Los campos son válidos, procede con el envío del formulario
+      await axios
+        .post(
+          "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/agregarColeccionPersonalizada.php",
+          {
+            id_usuario: JSON.parse(Cookies.get('isLoggedIn')).id,
+            nombre: this.nombre_coleccion,
+            descripcion: this.descripcion_coleccion,
+            foto: this.foto_coleccion,
+            id_juego: this.$route.params.id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(async (response) => {
+          console.log(response.data);
+          // Manejar la respuesta del servidor
+          if (response.data === "OK") {
+            // se ha podido modificar :)
+            this.toggleColeccionModal();
+            this.options = [];
+            this.nombre_coleccion = '';
+            this.descripcion_coleccion = '';
+            this.selectedImage = 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top';
+            this.foto_coleccion = '';
+            await this.conseguirColeccionesPersonalizadas();
+           
+          } else {
+            // Las credenciales son incorrectas
+            console.log("error no se pudo editar");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    saveImageToDatabase() {
+      // Obtener la imagen en formato base64
+      const base64Image = this.selectedImage.split(",")[1];
+      this.foto_coleccion = base64Image;
+    },
+    async seleccionarOpcion() {
+      if (Cookies.get("isLoggedIn")) {
+        await axios
+        .post(
+          "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/agregarJuegoColeccionPersonalizada.php",
+          {
+            id_coleccion: this.selectedOption.id,
+            id_juego: this.$route.params.id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          console.log("OK bro" + response.data)
+          if (response.data === "OK") {
+            this.selectedOption = '';
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }
+    },
+    handleImageChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          this.selectedImage = event.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+    },
     customLabel (option) {
-      return `<span>${option.nombre} - ${option.id}`
+      return `${option.nombre}`
+    },
+    async comprobarJuegoEnColeccionPersonalizada() {
+      if (Cookies.get("isLoggedIn")) {
+        for (let coleccion in this.coleccionesPersonalizadas) {
+        await axios
+        .post(
+          "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/comprobarJuegoEnColeccionPersonalizada.php",
+          {
+            id_coleccion: this.coleccionesPersonalizadas[coleccion].id_coleccion,
+            id_juego: this.$route.params.id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          console.log("OK bro" + response.data)
+          if (response.data === "OK") {
+           
+            document.getElementById('check' + this.coleccionesPersonalizadas[coleccion].id_coleccion).classList.remove("invisible");
+          } else {
+            document.getElementById('check' + this.coleccionesPersonalizadas[coleccion].id_coleccion).classList.add("invisible");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }
+    }
     },
     async conseguirColeccionesPersonalizadas() {
         await axios
@@ -1037,11 +1273,12 @@ export default {
             console.log(response);
             if (response.data !== "Errornull") {
               const jsonData = JSON.stringify(response.data);
-              let coleccionesPersonalizadas = JSON.parse(jsonData);
+              this.coleccionesPersonalizadas = JSON.parse(jsonData);
+              for (let coleccion in this.coleccionesPersonalizadas) {
+                this.options.push({ id: this.coleccionesPersonalizadas[coleccion].id_coleccion, nombre: this.coleccionesPersonalizadas[coleccion].nombre, imagen: this.coleccionesPersonalizadas[coleccion] && this.coleccionesPersonalizadas[coleccion].foto_coleccion? 'data:image/jpeg;base64,' + this.coleccionesPersonalizadas[coleccion].foto_coleccion: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top' });
+                console.log(this.coleccionesPersonalizadas[coleccion].foto_coleccion);
+                console.log(this.options[0].imagen);
 
-              for (let coleccion in coleccionesPersonalizadas) {
-                console.log(coleccionesPersonalizadas[coleccion].nombr);
-                this.options.push({ id: coleccionesPersonalizadas[coleccion].id_coleccion, nombre: coleccionesPersonalizadas[coleccion].nombre, imagen: coleccionesPersonalizadas[coleccion]? coleccionesPersonalizadas[coleccion].foto_coleccion: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top' });
               }
             } 
           })
@@ -1187,6 +1424,9 @@ export default {
     },
     toggleEliminarModal() {
       this.modal_eliminar.toggle();
+    },
+    toggleColeccionModal() {
+      this.modal_coleccion.toggle();
     },
     toggleGaleriaModal() {
       this.modal_galeria.toggle();
@@ -1626,6 +1866,22 @@ export default {
 
       this.modal_eliminar = new Modal(targetEl, options);
     },
+    configurarColeccionModal() {
+      // set the modal menu element
+      const targetEl = document.getElementById("coleccion-modal");
+
+      // options with default values
+      const options = {
+        placement: "center",
+        backdropClasses:
+          "bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40",
+        onHide: () => {},
+        onShow: () => {},
+        onToggle: () => {},
+      };
+
+      this.modal_coleccion = new Modal(targetEl, options);
+    },
     async conseguirValoraciones(IDJuego) {
       await axios
         .post(
@@ -1730,6 +1986,9 @@ export default {
     },
     estrellaInput(event) {
       this.characterCount = event.target.value.length;
+    },
+    contarCaracteresDescripcion(event) {
+      this.characterCount2 = event.target.value.length;
     },
     valorar() {
       document.getElementById("cerrarValoracionModal").click();

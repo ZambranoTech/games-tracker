@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter,  createWebHashHistory} from 'vue-router'
 
 //componentes
 import Detail from '../components/DetailComponent'
@@ -11,6 +11,8 @@ import MoreResultsComponent from '../components/MoreResultsComponent.vue'
 import PruebaComponent from '../components/PruebaComponent.vue'
 import ColeccionComponent from '../components/ColeccionComponent.vue'
 import ColeccionEditarComponent from '../components/ColeccionEditarComponent.vue'
+import ColeccionesComponent from '../components/ColeccionesComponent.vue'
+
 import navigationCount from '../logica/navigationCount.js';
 
 
@@ -43,12 +45,15 @@ const routes = [
     {
         path: '/coleccion/editar/:id', component: ColeccionEditarComponent, name:"editCollection"
     },
+    {
+        path: '/colecciones/:id', component: ColeccionesComponent, name:"collections"
+    },
 ]
 
 
 //crear objeto rutas de vue router -- objeto de VR
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes
 })
 

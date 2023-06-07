@@ -181,6 +181,8 @@ nuevosJuegos.forEach(game => {
   },
 
   async mounted() {
+    
+  
     //agregar que estamos en el inicio de color azul en el navbar
     document.getElementById("menuInicio").classList.add("bg-blue-700", "md:text-blue-500");
 
