@@ -1044,6 +1044,7 @@ import { reactive } from "vue";
 import { Modal, Carousel } from "flowbite";
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css';
+import Compressor from 'compressorjs';
 
 export default {
   inject: ["$http"], // inyectar la instancia de Axios
@@ -1211,17 +1212,39 @@ export default {
       }
     },
     handleImageChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+  const file = event.target.files[0];
+  if (file) {
+    const maxSize = 1024 * 1024; // 1 MB en bytes
 
-        reader.onload = (event) => {
-          this.selectedImage = event.target.result;
-        };
+    const options = {
+      maxWidth: 1024, // Ancho máximo de la imagen comprimida
+      maxHeight: 1024, // Altura máxima de la imagen comprimida
+      quality: 0.8, // Calidad de compresión (valor entre 0 y 1)
+      mimeType: 'image/jpeg' // Tipo MIME de la imagen comprimida
+    };
 
-        reader.readAsDataURL(file);
+    new Compressor(file, {
+      ...options,
+      success: (compressedFile) => {
+        if (compressedFile.size <= maxSize) {
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            this.selectedImage = event.target.result;
+            // Aquí puedes enviar this.selectedImage a tu base de datos en base64
+          };
+
+          reader.readAsDataURL(compressedFile);
+        } else {
+          console.log('La imagen comprimida excede el tamaño máximo permitido de 1 MB.');
+        }
+      },
+      error(err) {
+        console.log('Error al comprimir la imagen:', err.message);
       }
-    },
+    });
+  }
+},
     customLabel (option) {
       return `${option.nombre}`
     },

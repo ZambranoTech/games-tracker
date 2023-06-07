@@ -35,7 +35,7 @@
             <p class="font-bold text-gray-200 text-xl">10</p>
             <p class="text-gray-400 mb-4 md:mb-0">Seguidos</p>
           </div>
-          <div>
+          <div v-bind:class="{ 'cursor-pointer': existeTerminado }" @click="scrollToAnchor('terminado')">
             <p class="font-bold text-gray-200 text-xl">{{ this.coleccionesPredeterminadas.filter(coleccion => coleccion.nombre === "Terminado").length }}</p>
             <p class="text-gray-400">Terminados</p>
           </div>
@@ -53,7 +53,7 @@
           </button>
 
           <button v-if="this.$route.params.id !== obtenerID"
-            class="text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+            class="mx-auto text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
             Seguir
           </button>
         </div>
@@ -64,10 +64,10 @@
         <h1 class="text-4xl font-medium text-gray-200">
           {{ this.perfil.nombre }} {{ this.perfil.apellidos }},
           <span class="font-light text-gray-300">{{
-            this.conseguirEdad()
+            conseguirEdad()
           }}</span>
         </h1>
-        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">Unido el {{ formattedFechaReg }}</p>
+        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400 mt-2">Unido el {{ formattedFechaReg }}</p>
       </div>
 
       <template v-if="this.coleccionesPersonalizadas.length >0">
@@ -118,6 +118,7 @@
                       <h4 class="text-white text-2xl font-bold capitalize text-center">{{
                         coleccion ? coleccion.nombre : "-"
                       }}</h4>
+                      
                        <p class="text-gray-400 text-center">{{ coleccion && coleccion.descripcion ? (coleccion.descripcion.length > 50 ? coleccion.descripcion.slice(0, 50) + '...' : coleccion.descripcion) : '' }}</p>
 
                         <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">{{ coleccion.num_juegos }} Juegos <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
@@ -331,7 +332,7 @@
       </template>
 
       <template v-if="existeTerminado">
-        <div class="bg-gray-900 mt-8 flex items-center justify-center">
+        <div class="bg-gray-900 mt-8 flex items-center justify-center" id="terminado">
           <div
             class="bg-gray-800 w-full flex-1 flex flex-col space-y-5 lg:space-y-0 lg:flex-row lg:space-x-10  p-6 my-2 mx-4 rounded-2xl">
             <!-- Content -->
@@ -605,6 +606,7 @@ import Cookies from 'js-cookie';
 import { Modal } from 'flowbite';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import { reactive } from "vue";
+import Compressor from 'compressorjs';
 
 export default {
   inject: ["$http"], // inyectar la instancia de Axios
@@ -857,6 +859,12 @@ for (let e = 0; e < juegosElements2.length; e++) {
         
 
         },
+        scrollToAnchor(anchor) {
+    const element = document.getElementById(anchor);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
     obtenerImagen(id_juego) {
       // Si la imagen está disponible en el objeto game, se devuelve su URL.
       if (this.juegosColecciones[id_juego] && this.juegosColecciones[id_juego].background_image) {
@@ -1042,7 +1050,6 @@ for (let e = 0; e < juegosElements2.length; e++) {
               } else {
                 // Usuario no encontrado
                 if (this.usuario.length >= 4) {
-                  console.log("hola");
                   const input = document.getElementById('inputUsuario');
                   // Realiza las acciones correspondientes
                   input.classList.remove('border-red-600', 'focus:border-red-500', 'focus:ring-red-500');
@@ -1061,6 +1068,17 @@ for (let e = 0; e < juegosElements2.length; e++) {
               reject(error);
             });
         });
+      } else {
+        if (this.usuario.length >= 4) {
+                  const input = document.getElementById('inputUsuario');
+                  // Realiza las acciones correspondientes
+                  input.classList.remove('border-red-600', 'focus:border-red-500', 'focus:ring-red-500');
+                  input.classList.add('border-gray-200', 'focus:border-indigo-500');
+                  const error = document.getElementById('error-message-user');
+                  error.classList.add('hidden');
+                  error.textContent = ""
+
+                }
       }
     },
 
@@ -1133,21 +1151,45 @@ for (let e = 0; e < juegosElements2.length; e++) {
       return edad;
     },
     handleImageChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+  const file = event.target.files[0];
+  if (file) {
+    const maxSize = 1024 * 1024; // 1 MB en bytes
 
-        reader.onload = (event) => {
-          this.selectedImage = event.target.result;
-        };
+    const options = {
+      maxWidth: 1024, // Ancho máximo de la imagen comprimida
+      maxHeight: 1024, // Altura máxima de la imagen comprimida
+      quality: 0.8, // Calidad de compresión (valor entre 0 y 1)
+      mimeType: 'image/jpeg' // Tipo MIME de la imagen comprimida
+    };
 
-        reader.readAsDataURL(file);
+    new Compressor(file, {
+      ...options,
+      success: (compressedFile) => {
+        if (compressedFile.size <= maxSize) {
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            this.selectedImage = event.target.result;
+            // Aquí puedes enviar this.selectedImage a tu base de datos en base64
+          };
+
+          reader.readAsDataURL(compressedFile);
+        } else {
+          console.log('La imagen comprimida excede el tamaño máximo permitido de 1 MB.');
+        }
+      },
+      error(err) {
+        console.log('Error al comprimir la imagen:', err.message);
       }
-    },
+    });
+  }
+},
 
     saveImageToDatabase() {
       // Obtener la imagen en formato base64
       const base64Image = this.selectedImage.split(",")[1];
+
+
       this.foto = base64Image;
     },
 

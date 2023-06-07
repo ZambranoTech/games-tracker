@@ -366,7 +366,7 @@
         >
           <li>
             <router-link :to="{ name: 'home' }"
-            class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 "
+            class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 md:hover:text-blue-500"
             aria-current="page"
             id="menuInicio"
             >
@@ -374,16 +374,18 @@
             </router-link>
           </li>
           <li>
-            <a
+
+            <router-link :to="{ name: 'social' }"
               href="#"
-              class="block py-2 pl-3 pr-4 rounded md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent border-gray-700"
-              >Social</a
+              class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 md:hover:text-blue-500"
+              id="menuSocial"
+              >Social</router-link
             >
           </li>
           <li>
             <a
               href="#"
-              class="block py-2 pl-3 pr-4 rounded md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent border-gray-700"
+              class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 md:hover:text-blue-500"
               >Sobre Nosotros</a
             >
           </li>

@@ -327,6 +327,7 @@ import axios from "axios";
 import { reactive } from "vue";
 import Cookies from "js-cookie";
 import navigationCount from "../logica/navigationCount";
+import Compressor from 'compressorjs';
 
 
 export default {
@@ -656,17 +657,39 @@ contarCaracteresDescripcion(event) {
       this.search_games = response.data.results;
     },
     handleImageChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+  const file = event.target.files[0];
+  if (file) {
+    const maxSize = 1024 * 1024; // 1 MB en bytes
 
-        reader.onload = (event) => {
-          this.selectedImage = event.target.result;
-        };
+    const options = {
+      maxWidth: 1024, // Ancho máximo de la imagen comprimida
+      maxHeight: 1024, // Altura máxima de la imagen comprimida
+      quality: 0.8, // Calidad de compresión (valor entre 0 y 1)
+      mimeType: 'image/jpeg' // Tipo MIME de la imagen comprimida
+    };
 
-        reader.readAsDataURL(file);
+    new Compressor(file, {
+      ...options,
+      success: (compressedFile) => {
+        if (compressedFile.size <= maxSize) {
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            this.selectedImage = event.target.result;
+            // Aquí puedes enviar this.selectedImage a tu base de datos en base64
+          };
+
+          reader.readAsDataURL(compressedFile);
+        } else {
+          console.log('La imagen comprimida excede el tamaño máximo permitido de 1 MB.');
+        }
+      },
+      error(err) {
+        console.log('Error al comprimir la imagen:', err.message);
       }
-    },
+    });
+  }
+},
     cambiarFilaColumna(esUnaFila) {
       if (esUnaFila) {
         document.getElementById("flexColeccion").classList.remove("flex-wrap");

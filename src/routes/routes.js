@@ -12,6 +12,7 @@ import PruebaComponent from '../components/PruebaComponent.vue'
 import ColeccionComponent from '../components/ColeccionComponent.vue'
 import ColeccionEditarComponent from '../components/ColeccionEditarComponent.vue'
 import ColeccionesComponent from '../components/ColeccionesComponent.vue'
+import SocialComponent from '../components/SocialComponent.vue'
 
 import navigationCount from '../logica/navigationCount.js';
 
@@ -47,6 +48,9 @@ const routes = [
     },
     {
         path: '/colecciones/:id', component: ColeccionesComponent, name:"collections"
+    },
+    {
+        path: '/social', component: SocialComponent, name:"social"
     },
 ]
 
