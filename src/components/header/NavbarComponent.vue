@@ -456,8 +456,7 @@ export default {
 
   mounted() {
     if (Cookies.get("isLoggedIn") !== undefined) {
-      this.usuario = JSON.parse(Cookies.get("isLoggedIn"));
-      this.cargarFotoPerfil();
+      this.conseguirPerfil();
     }
   },
 
@@ -465,6 +464,28 @@ export default {
     cerrarSesion() {
       Cookies.remove("isLoggedIn");
       window.location.reload();
+    },
+    async conseguirPerfil() {
+      await
+        axios
+          .post(
+            "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/conseguirPerfil.php",
+            {
+              id: JSON.parse(Cookies.get('isLoggedIn')).id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            if (response.data !== "Errornull") {
+              const jsonData = JSON.stringify(response.data);
+              this.usuario = JSON.parse(jsonData);
+              this.cargarFotoPerfil();
+            } 
+          })
     },
     checkEnterKey(event) {
       if (event.key === "Enter" || event.keyCode === 13 || event.which === 13) {

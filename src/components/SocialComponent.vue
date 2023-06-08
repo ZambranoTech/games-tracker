@@ -207,6 +207,7 @@
                         <div class="flex flex-wrap justify-center">
                           <div class="w-full px-4">
                             <a
+                              @click="seguirJugador"
                               href="javascript:;"
                               class="font-normal  hover:text-slate-400"
                               >Seguir</a
@@ -256,7 +257,7 @@
                         </h4>
 
                         <div class="flex flex-nowrap mt-4 md:mt-0">
-            <p class="text-gray-400 mr-2">
+            <p>
               Creado el {{ formattedFechaReg(coleccion.fecha_creacion) }}
             </p>
            
@@ -316,6 +317,9 @@ import axios from "axios";
 import moment from 'moment';
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import Cookies from 'js-cookie';
 
 export default {
   components: { VueMultiselect},
@@ -396,6 +400,19 @@ export default {
       return 'https://flowbite.com/docs/images/examples/image-2@2x.jpg';
     }
   }
+    },
+    seguirJugador() {
+      if (Cookies.get("isLoggedIn")) {
+        console.log("a");
+      } else {
+        toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
     },
     async conseguirColecciones() {
       await axios

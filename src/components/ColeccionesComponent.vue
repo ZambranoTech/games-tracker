@@ -103,6 +103,8 @@
                       >
                         {{ coleccion ? coleccion.nombre : "-" }}
                       </h4>
+                      <p>Creado el {{coleccion && coleccion.fecha_creacion? formattedFechaReg(coleccion.fecha_creacion) : "-" }}</p>
+
                       <p class="text-gray-400 text-center">
                         {{
                           coleccion && coleccion.descripcion
@@ -222,6 +224,8 @@
                       >
                         {{ coleccion ? coleccion.nombre : "-" }}
                       </h4>
+                      <p>Creado el {{coleccion && coleccion.fecha_creacion? formattedFechaReg(coleccion.fecha_creacion) : "-" }}</p>
+
                       <p class="text-gray-400 text-center">
                         {{
                           coleccion && coleccion.descripcion
@@ -340,6 +344,7 @@
               type="file"
               id="imageInput"
               accept="image/*"
+              ref="fileInput"
               @change="handleImageChange"
             />
           </div>
@@ -367,6 +372,9 @@ import axios from "axios";
 import { Modal } from "flowbite";
 import Cookies from "js-cookie";
 import Compressor from 'compressorjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import moment from 'moment';
 
 export default {
   inject: ["$http"], // inyectar la instancia de Axios
@@ -379,10 +387,12 @@ export default {
       foto_coleccion: '',
       eresPropietario: false,
       selectedImage: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top',
+      nombre_coleccion: '',
+      descripcion_coleccion: '',
 
     };
   },
-
+  
   mounted() {
     this.configurarColeccionModal();
     this.comprobarSiEresPropietario();
@@ -463,7 +473,14 @@ export default {
         }
       }
     },
-
+    formattedFechaReg(fecha_reg) {
+      const myMoment = moment; // Asigna moment a una nueva variable
+      if (fecha_reg) {
+        return myMoment(fecha_reg).format("D MMMM YYYY");
+      } else {
+        return "-";
+      }
+    },
     comprobarSiEresPropietario() {
       if (Cookies.get("isLoggedIn")) {
         const id_usuario_colecciones = this.$route.params.id;
@@ -478,17 +495,18 @@ export default {
       }
     },
    
-  async agregarColeccionPersonalizada() {
+    async agregarColeccionPersonalizada() {
+      if (this.nombre_coleccion.trim() !== ""){
       this.saveImageToDatabase();
       // Los campos son válidos, procede con el envío del formulario
       await axios
         .post(
           "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/agregarColeccionPersonalizada.php",
           {
-            id_usuario: this.$route.params.id,
+            id_usuario: JSON.parse(Cookies.get('isLoggedIn')).id,
             nombre: this.nombre_coleccion,
             descripcion: this.descripcion_coleccion,
-            foto: this.foto_coleccion,
+            foto: this.foto_coleccion
           },
           {
             headers: {
@@ -502,6 +520,16 @@ export default {
           if (response.data === "OK") {
             // se ha podido modificar :)
             this.toggleColeccionModal();
+            toast.success('¡La Coleccion se ha creado correctamente y se ha insertado el juego!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+  
+});   
+            this.$refs.fileInput.value = null
+            this.options = [];
             this.nombre_coleccion = '';
             this.descripcion_coleccion = '';
             this.selectedImage = 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top';
@@ -510,12 +538,27 @@ export default {
            
           } else {
             // Las credenciales son incorrectas
-            console.log("error no se pudo editar");
+            toast.warning('¡Debes de añadir al menos un nombre!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
           }
         })
         .catch((error) => {
           console.error(error);
         });
+      } else {
+        toast.warning('¡Debes introducir un nombre valido!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
     },
   configurarColeccionModal() {
       // set the modal menu element

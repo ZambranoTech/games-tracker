@@ -361,7 +361,8 @@ import axios from 'axios';
 import moment from 'moment';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import Compressor from 'compressorjs';
-
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   data() {
@@ -467,10 +468,14 @@ new Datepicker(datepickerEl, {
             // se ha podido registrar :)
             this.$router.replace({ name: 'login' }).then(() => {
   this.$nextTick(() => {
-    var toastSuccess = document.getElementById('toast-success');
-    if (toastSuccess) {
-      toastSuccess.classList.remove('hidden');
-    }
+    
+toast.success('Registrado Correctamente!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
     window.scrollTo(0, 0); // Desplazarse hacia arriba de la página
   });
 });

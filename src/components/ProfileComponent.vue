@@ -1,28 +1,4 @@
 <template>
-  <div id="toast-success"
-    class="hidden flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 mx-auto"
-    role="alert">
-    <div
-      class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
-      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clip-rule="evenodd"></path>
-      </svg>
-      <span class="sr-only">Check icon</span>
-    </div>
-    <div class="ml-3 text-sm font-normal">Editado correctamente.</div>
-    <button type="button"
-      class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-      data-dismiss-target="#toast-success" aria-label="Close">
-      <span class="sr-only">Close</span>
-      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd"
-          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-          clip-rule="evenodd"></path>
-      </svg>
-    </button>
-  </div>
   <div class="">
     <div class="p-6 shadow mt-24">
       <div class="grid grid-cols-1 md:grid-cols-3">
@@ -52,7 +28,7 @@
             Editar Perfil
           </button>
 
-          <button v-if="this.$route.params.id !== obtenerID"
+          <button @click="seguirJugador" v-if="this.$route.params.id !== obtenerID"
             class="mx-auto text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
             Seguir
           </button>
@@ -118,7 +94,8 @@
                       <h4 class="text-white text-2xl font-bold capitalize text-center">{{
                         coleccion ? coleccion.nombre : "-"
                       }}</h4>
-                      
+                                            <p>Creado el {{coleccion && coleccion.fecha_creacion? formattedFechaCreacion(coleccion.fecha_creacion) : "-" }}</p>
+
                        <p class="text-gray-400 text-center">{{ coleccion && coleccion.descripcion ? (coleccion.descripcion.length > 50 ? coleccion.descripcion.slice(0, 50) + '...' : coleccion.descripcion) : '' }}</p>
 
                         <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">{{ coleccion.num_juegos }} Juegos <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
@@ -607,6 +584,8 @@ import { Modal } from 'flowbite';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import { reactive } from "vue";
 import Compressor from 'compressorjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   inject: ["$http"], // inyectar la instancia de Axios
@@ -632,13 +611,6 @@ export default {
   },
 
   mounted() {
-    if (sessionStorage.getItem('reloading') === "true") {
-      sessionStorage.clear(); //so it doesn't trigger next time
-      var toastSuccess = document.getElementById('toast-success');
-      if (toastSuccess) {
-        toastSuccess.classList.remove('hidden');
-      }
-    }
     this.conseguirPerfil()
       .then(() => {
         // Se cumple la condición (credenciales válidas)
@@ -693,7 +665,8 @@ export default {
       } else {
         return "-";
       }
-    }
+    },
+    
   },
 
   methods: {
@@ -727,37 +700,31 @@ export default {
                 this.conseguirPerfil()
                   .then(() => {
                     // Se cumple la condición (credenciales válidas)
-                    this.cargarFotoPerfil();
+                    this.obtenerImagenPerfil();
                     this.cargarEditarPerfil();
                   })
-                  .catch(() => {
-                    // No se cumple la condición (credenciales incorrectas o error)
-                    // Realizar acciones adicionales aquí
-                  });
                 const btnCerrarModal = document.getElementById("btnCerrarModal");
                 btnCerrarModal.click();
 
+                toast.success('¡Editado Correctamente!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+this.$root.$refs.navbarRef.conseguirPerfil();
 
-                sessionStorage.setItem('reloading', "true");
-                const usuario = {
-                  id: this.$route.params.id,
-                  nombre: this.nombre,
-                  apellidos: this.apellidos,
-                  usuario: this.usuario,
-                  email: this.email,
-                  fecha_nac: this.fecha_nac,
-                  fecha_reg: JSON.parse(Cookies.get('isLoggedIn')).fecha_reg,
-                  genero: this.genero.toLowerCase(),
-
-                };
-                Cookies.set("isLoggedIn", JSON.stringify(usuario));
-
-
-                window.location.reload();
 
               } else {
                 // Las credenciales son incorrectas
-                console.log("error no se pudo editar");
+                toast.warning('¡Debes de editar algun campo!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
               }
             })
             .catch(error => {
@@ -770,6 +737,27 @@ export default {
           // Manejar el error si ocurre
         });
 
+    },
+    seguirJugador() {
+      if (Cookies.get("isLoggedIn")) {
+        console.log("a");
+      } else {
+        toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
+    },
+    formattedFechaCreacion(fecha_creacion) {
+      const myMoment = moment; // Asigna moment a una nueva variable
+      if (fecha_creacion) {
+        return myMoment(fecha_creacion).format("D MMMM YYYY");
+      } else {
+        return "-";
+      }
     },
     cambiarFilaColumna(nombreColeccion, esUnaFila) {
         if (nombreColeccion === 'Quiero') {

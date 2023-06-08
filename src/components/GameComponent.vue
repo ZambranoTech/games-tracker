@@ -29,7 +29,7 @@ const activeTab = ref("first");
         class="mt-4 group rounded-2xl bg-blue-700 lg:h-12 font-bold text-lg text-white relative overflow-hidden"
         style="width: 100%"
         id="cerrarValoracionModal"
-        :disabled="!isLoggedIn"
+        
         v-if="!ya_valorado"
         @click="toggleValorarModal"
       >
@@ -52,7 +52,7 @@ const activeTab = ref("first");
       </button>
 
       <div class="flex mt-2 collections flex-wrap" style="width: 100%">
-        <button class="btn bg-gray-900" @click="agregarColeccionPredeterminada('Quiero')" :disabled="!isLoggedIn">
+        <button class="btn bg-gray-900" @click="agregarColeccionPredeterminada('Quiero')" >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -138,8 +138,8 @@ const activeTab = ref("first");
             <div v-html="game.description"></div>
           </tab>
           <tab name="second" title="Añadir a">
-            Elige una colección
-            <VueMultiselect :custom-label="customLabel" class="cursor-pointer text-gray-600" v-model="selectedOption" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" :allow-empty="false" @select="seleccionarOpcion" @click="comprobarJuegoEnColeccionPersonalizada()">
+            Elige una colección:
+            <VueMultiselect :custom-label="customLabel" class="cursor-pointer text-gray-600" :no-options="XD" v-model="selectedOption" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" :allow-empty="false" @select="seleccionarOpcion" @click="comprobarJuegoEnColeccionPersonalizada()">
   <template v-slot:option="{ option }">
     <div class="flex flex-nowrap">
       <div>
@@ -149,8 +149,14 @@ const activeTab = ref("first");
   <font-awesome-icon icon="check" class="mt-12 ms-2 invisible" :id="'check' + option.id "/>
     </div>
   </template>
+  <template #noOptions>
+    No tienes Colecciones Personalizadas.
+  </template>
+  <template #placeholder>
+    Selecciona Una Coleccion Personalizada
+  </template>
             </VueMultiselect>
-            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-2" @click="toggleColeccionModal">Nueva coleccion</button>
+            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-2" @click="toggleColeccionModal">Nueva Coleccion Persoalizada</button>
 
 </tab>
           <tab name="third" title="Compartir"> Lorem... </tab>
@@ -928,6 +934,7 @@ const activeTab = ref("first");
             <input
               type="file"
               id="imageInput"
+              ref="fileInput"
               accept="image/*"
               @change="handleImageChange"
             />
@@ -1045,6 +1052,8 @@ import { Modal, Carousel } from "flowbite";
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css';
 import Compressor from 'compressorjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   inject: ["$http"], // inyectar la instancia de Axios
@@ -1057,6 +1066,8 @@ export default {
     return {
       game: {},
       screenshots: {},
+      nombre_coleccion: '',
+      descripcion_coleccion: '',
       trailers: {},
       characterCount: 0,
       valoracion: 20,
@@ -1081,6 +1092,12 @@ export default {
   },
 
   mounted() {
+    this.conseguirColeccionesPersonalizadas().then(() => {
+             
+             this.comprobarJuegoEnColeccionPersonalizada();
+             
+           });
+
     //desbugear menu movil en caso de que lo abras con el menu
     setTimeout(() => {
         if (document.getElementById("mobile-menu-2") && document.getElementById("cuerpo")) 
@@ -1113,11 +1130,7 @@ export default {
         JSON.parse(Cookies.get("isLoggedIn")).id,
         this.$route.params.id
       );
-    this.conseguirColeccionesPersonalizadas().then(() => {
-             
-      this.comprobarJuegoEnColeccionPersonalizada();
-      
-    });
+    
     this.conseguirValoraciones(this.$route.params.id);
 
 
@@ -1140,6 +1153,7 @@ export default {
     },
     
     async agregarColeccionPersonalizada() {
+      if (this.nombre_coleccion.trim() !== ""){
       this.saveImageToDatabase();
       // Los campos son válidos, procede con el envío del formulario
       await axios
@@ -1164,28 +1178,51 @@ export default {
           if (response.data === "OK") {
             // se ha podido modificar :)
             this.toggleColeccionModal();
+            toast.success('¡La Coleccion se ha creado correctamente y se ha insertado el juego!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+  
+});         this.$refs.fileInput.value = null
             this.options = [];
             this.nombre_coleccion = '';
             this.descripcion_coleccion = '';
             this.selectedImage = 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top';
             this.foto_coleccion = '';
             await this.conseguirColeccionesPersonalizadas();
-           
+            
           } else {
             // Las credenciales son incorrectas
-            console.log("error no se pudo editar");
+            toast.warning('¡Debes de añadir al menos un nombre!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
           }
         })
         .catch((error) => {
           console.error(error);
         });
+      } else {
+        toast.warning('¡Debes introducir un nombre valido!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
     },
     saveImageToDatabase() {
       // Obtener la imagen en formato base64
       const base64Image = this.selectedImage.split(",")[1];
       this.foto_coleccion = base64Image;
     },
-    async seleccionarOpcion() {
+    async seleccionarOpcion(option) {
       if (Cookies.get("isLoggedIn")) {
         await axios
         .post(
@@ -1201,9 +1238,25 @@ export default {
           }
         )
         .then((response) => {
-          console.log("OK bro" + response.data)
-          if (response.data === "OK") {
-            this.selectedOption = '';
+          this.selectedOption = '';
+          if (response.data === "Insertado") {
+            toast.success('¡Juego agregado a la coleccion ' + option.nombre + "!", { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+          } else if (response.data === "Eliminado") {
+            toast.success('¡Juego eliminado de la coleccion ' + option.nombre + "!", { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+          } else {
+            console.log("error")
           }
         })
         .catch((error) => {
@@ -1374,6 +1427,7 @@ export default {
     },
 
     agregarColeccionPredeterminada(nombre) {
+      if (this.isLoggedIn) {
       axios
         .post(
           "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/agregarColeccionPredeterminada.php",
@@ -1396,6 +1450,7 @@ export default {
             let invisible = false;
               if (!document.getElementById("check" + nombre).classList.contains("invisible")) {
                 invisible = true;
+               
               }
               document.getElementById("checkQuiero").classList.add("invisible");
               document.getElementById("checkJugando").classList.add("invisible");
@@ -1403,8 +1458,26 @@ export default {
           
               document.getElementById("check" + nombre).classList.remove("invisible");
 
-              if (invisible) 
+              if (invisible) {
               document.getElementById("check" + nombre).classList.add("invisible");
+              toast.success('Eliminado Correctamente de la coleccion ' + nombre + "!", { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+  
+});
+} else {
+  toast.success('Añadido Correctamente a la coleccion ' + nombre + "!", { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+  
+});
+}
           } else {
             // Las credenciales son incorrectas
             console.log("error");
@@ -1413,6 +1486,15 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+      } else {
+        toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
     },
 
     async eliminarValoracion() {
@@ -1443,13 +1525,32 @@ export default {
     },
 
     toggleValorarModal() {
+      if (this.isLoggedIn)
       this.modal_valorar.toggle();
+      else
+      toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      
     },
     toggleEliminarModal() {
       this.modal_eliminar.toggle();
     },
     toggleColeccionModal() {
+      if (this.isLoggedIn)
       this.modal_coleccion.toggle();
+      else
+      toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
     },
     toggleGaleriaModal() {
       this.modal_galeria.toggle();

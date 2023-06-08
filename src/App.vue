@@ -1,7 +1,7 @@
 <template>
   <navbar>
   <div class="container mx-auto border-b pb-2 border-gray-500">
-  <navbar-component/>
+  <navbar-component ref="navbarRef" />
   </div>  
 </navbar>
   <body class="container mx-auto mt-5">
