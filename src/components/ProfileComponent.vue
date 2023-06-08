@@ -578,6 +578,8 @@
 
 <script>
 import moment from 'moment';
+import 'moment/locale/es'; // Importa el idioma español
+
 import axios from "axios";
 import Cookies from 'js-cookie';
 import { Modal } from 'flowbite';
@@ -661,7 +663,7 @@ export default {
     formattedFechaReg() {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (this.perfil?.fecha_reg) {
-        return myMoment(this.perfil.fecha_reg).format("D MMMM YYYY");
+        return myMoment(this.perfil.fecha_reg).format("D [de] MMMM [de] YYYY");
       } else {
         return "-";
       }
@@ -754,7 +756,7 @@ this.$root.$refs.navbarRef.conseguirPerfil();
     formattedFechaCreacion(fecha_creacion) {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (fecha_creacion) {
-        return myMoment(fecha_creacion).format("D MMMM YYYY");
+        return myMoment(fecha_creacion).format("D [de] MMMM [de] YYYY");
       } else {
         return "-";
       }

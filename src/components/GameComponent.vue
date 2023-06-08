@@ -441,7 +441,7 @@ const activeTab = ref("first");
                   {{
                     moment(
                       perfilesUsuarios[valoracion.id_usuario]?.fecha_reg
-                    ).format("MMMM YYYY")
+                    ).format("MMMM [de] YYYY")
                   }}</time
                 >
               </p>
@@ -520,7 +520,7 @@ const activeTab = ref("first");
             Valorado el
             <time datetime="2017-03-03 19:00">
               {{
-                moment(valoracion?.fecha_publicacion).format("D MMMM YYYY")
+                moment(valoracion?.fecha_publicacion).format("D [de] MMMM [de] YYYY")
               }}</time
             >
           </p>
@@ -2098,7 +2098,7 @@ export default {
       const date = moment(dateString);
       const formattedDate = date.format("MMM DD, YYYY");
       const yearsAgo = date.fromNow(true);
-      return `${formattedDate} (${yearsAgo} ago)`;
+      return `${formattedDate} (${yearsAgo} atras)`;
     },
 
     setRating(rating) {

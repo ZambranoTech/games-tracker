@@ -315,6 +315,8 @@
 <script>
 import axios from "axios";
 import moment from 'moment';
+import 'moment/locale/es';
+
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css';
 import { toast } from 'vue3-toastify';
@@ -459,7 +461,7 @@ export default {
     formattedFechaReg(fecha_reg) {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (fecha_reg) {
-        return myMoment(fecha_reg).format("D MMMM YYYY");
+        return myMoment(fecha_reg).format("D [de] MMMM [de] YYYY");
       } else {
         return "-";
       }

@@ -10,7 +10,7 @@
     </router-link>
     <p>{{ game.name }}</p>
     <div class="flex">
-      <p>{{ game.released }}</p>
+      <p>{{ formattedFechaSalida }}</p>
       <div class="ms-4 flex">
         <p>{{ game.metacritic !== null ? game.metacritic + '%' : 'N/A' }}</p>
 
@@ -37,6 +37,9 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import moment from "moment"; //para calcular distancias entre fechas y formatear fecha y convertir en fecha de moment
+
 export default {
   props: {
     game: {
@@ -51,7 +54,14 @@ export default {
       }
       // De lo contrario, se devuelve una imagen por defecto.
       return 'https://via.placeholder.com/364x252';
-    }
+    },
+    formattedFechaSalida() {
+      if (this.game && this.game.released) {
+        return moment(this.game.released).format('DD/MM/YYYY') 
+      } else {
+        return "-"
+      }
+    },
   }
 }
 </script>

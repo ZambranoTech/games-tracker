@@ -476,7 +476,7 @@ export default {
     formattedFechaReg(fecha_reg) {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (fecha_reg) {
-        return myMoment(fecha_reg).format("D MMMM YYYY");
+        return myMoment(fecha_reg).format("D [de] MMMM [de] YYYY");
       } else {
         return "-";
       }

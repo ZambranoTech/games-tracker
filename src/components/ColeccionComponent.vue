@@ -376,7 +376,7 @@ export default {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (this.infoColeccion[0]?.fecha_creacion) {
         return myMoment(new Date(this.infoColeccion[0].fecha_creacion)).format(
-          "D MMMM YYYY"
+          "D [de] MMMM [de] YYYY"
         );
       } else {
         return "-";
