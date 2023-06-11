@@ -15,6 +15,7 @@ import ColeccionesComponent from '../components/ColeccionesComponent.vue'
 import SocialComponent from '../components/SocialComponent.vue'
 import SeguidosComponent from '../components/SeguidosComponent.vue'
 import SeguidoresComponent from '../components/SeguidoresComponent.vue'
+import SobreNosotrosComponent from '../components/SobreNosotrosComponent.vue'
 
 import navigationCount from '../logica/navigationCount.js';
 
@@ -59,6 +60,9 @@ const routes = [
     },
     {
         path: '/perfil/:id/seguidores', component: SeguidoresComponent, name:"followers"
+    },
+    {
+        path: '/sobre-nosotros', component: SobreNosotrosComponent, name:"about-us"
     },
 ]
 

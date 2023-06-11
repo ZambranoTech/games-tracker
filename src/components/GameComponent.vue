@@ -136,6 +136,11 @@ const activeTab = ref("first");
           <!-- class appends to content DIV for all tabs -->
           <tab name="first" title="Detalles" class="detalles">
             <div v-html="game.description"></div>
+            <label class="mt-2 relative inline-flex items-center mb-4 cursor-pointer">
+    <input type="checkbox" value="" class="sr-only peer" v-model="isChecked" @change="handleSlide">
+    <div class="w-11 h-6 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-800 bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-blue-600"></div>
+    <span class="ml-3 text-sm font-medium text-gray-300">Texto Original</span>
+  </label>
           </tab>
           <tab name="second" title="Añadir a">
             Elige una colección:
@@ -1088,6 +1093,8 @@ export default {
       characterCount2: 0,
       foto_coleccion: '',
       selectedImage: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top',
+      descripcion_esp: '',
+      description: '',
     };
   },
 
@@ -1115,7 +1122,6 @@ export default {
       const numLines = Math.floor(gameTitleHeight / lineHeight);
 
       this.isMultiLine = numLines;
-      console.log(this.isMultiLine);
     });
   });
     this.conseguirCapturas(this.$route.params.id)
@@ -1150,8 +1156,32 @@ export default {
       const url = `/games/${IDJuego}`;
       const response = await this.$http.get(url);
       this.game = response.data;
+      await this.cambiarIdiomaDescripcion();
     },
-    
+
+    handleSlide() {
+      if (this.isChecked) {
+       this.game.description = this.description;
+      } else {
+        this.game.description = this.descripcion_esp;
+      }
+    },
+
+    async cambiarIdiomaDescripcion() {
+      const descripcion = this.game.description;
+      console.log(descripcion);
+      const url = "https://www.apertium.org/apy/translate?langpair=en%7Ces&markUnknown=no&q=" + encodeURIComponent(descripcion);
+
+  try {
+    const response = await axios.get(url);
+    this.descripcion_esp = response.data.responseData.translatedText;
+    this.description = this.game.description;
+    this.game.description = response.data.responseData.translatedText;
+
+  } catch (error) {
+    console.error('Error al cambiar el idioma de la descripción:', error);
+  }
+    },
     async agregarColeccionPersonalizada() {
       if (this.nombre_coleccion.trim() !== ""){
       this.saveImageToDatabase();
@@ -1173,7 +1203,6 @@ export default {
           }
         )
         .then(async (response) => {
-          console.log(response.data);
           // Manejar la respuesta del servidor
           if (response.data === "OK") {
             // se ha podido modificar :)
@@ -1318,7 +1347,6 @@ export default {
           }
         )
         .then((response) => {
-          console.log("OK bro" + response.data)
           if (response.data === "OK") {
            
             document.getElementById('check' + this.coleccionesPersonalizadas[coleccion].id_coleccion).classList.remove("invisible");
@@ -1346,14 +1374,11 @@ export default {
             }
           )
           .then((response) => {
-            console.log(response);
             if (response.data !== "Errornull") {
               const jsonData = JSON.stringify(response.data);
               this.coleccionesPersonalizadas = JSON.parse(jsonData);
               for (let coleccion in this.coleccionesPersonalizadas) {
                 this.options.push({ id: this.coleccionesPersonalizadas[coleccion].id_coleccion, nombre: this.coleccionesPersonalizadas[coleccion].nombre, imagen: this.coleccionesPersonalizadas[coleccion] && this.coleccionesPersonalizadas[coleccion].foto_coleccion? 'data:image/jpeg;base64,' + this.coleccionesPersonalizadas[coleccion].foto_coleccion: 'https://cdn.dribbble.com/users/1868020/screenshots/10055960/media/b868eae80cd2d17052965ef1bd130c02.jpg?compress=1&resize=400x300&vertical=top' });
-                console.log(this.coleccionesPersonalizadas[coleccion].foto_coleccion);
-                console.log(this.options[0].imagen);
 
               }
             } 
@@ -1443,7 +1468,6 @@ export default {
           }
         )
         .then((response) => {
-          console.log(response.data);
           // Manejar la respuesta del servidor
           if (response.data === "OK") {
             // se ha podido registrar :)
@@ -1564,7 +1588,6 @@ export default {
 
     configurarCarousel() {
       var items = '';
-      console.log(this.screenshots.results.length);
       if (this.screenshots.results.length >= 6) {
       items = [
         {
@@ -2027,11 +2050,8 @@ export default {
             for (var valoracion of this.valoraciones) {
               suma_nota += parseInt(valoracion.puntuacion);
                           }
-            console.log(suma_nota) ;
             this.nota_rating = Math.round(suma_nota / this.valoraciones.length);
-          } else {
-            console.log("error");
-          }
+          } 
         })
         .catch((error) => {
           console.error(error);

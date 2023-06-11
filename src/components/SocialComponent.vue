@@ -317,7 +317,7 @@ export default {
   mounted() {
     this.isLoggedIn = Cookies.get('isLoggedIn') ? JSON.parse(Cookies.get('isLoggedIn')) : null 
     //agregar que estamos en el inicio de color azul en el navbar
-    document.getElementById("menuSocial").classList.add("bg-blue-700", "md:text-blue-500");
+    document.getElementById("socialMenu").classList.add("bg-blue-700", "md:text-blue-500");
     this.conseguirJugadores();
     this.conseguirColecciones();
   },
@@ -431,11 +431,19 @@ export default {
         )
         .then((response) => {
           // Manejar la respuesta del servidor
-          console.log(response.data);
           if (response.data === "Insertado") {
             // se ha podido registrar :)
             document.getElementById(id_seguido).textContent = "Dejar de Seguir";
+            this.jugadores.find(jugador => jugador.id === id_seguido).num_seguidores = parseInt(this.jugadores.find(jugador => jugador.id === id_seguido).num_seguidores, 10) + 1;
           }  else if (response.data === "Eliminado") {
+            const jugador = this.jugadores.find(jugador => jugador.id === id_seguido);
+            console.log("XD " + jugador.num_seguidores)
+if (jugador && jugador.num_seguidores != 1) {
+  jugador.num_seguidores -= 1;
+} else {
+  console.log("hola");
+  jugador.num_seguidores = "0";
+}
             document.getElementById(id_seguido).textContent = "Seguir";
           }else {
             // Las credenciales son incorrectas

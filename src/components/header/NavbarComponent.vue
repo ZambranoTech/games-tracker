@@ -374,19 +374,17 @@
             </router-link>
           </li>
           <li>
-
             <router-link :to="{ name: 'social' }"
-              href="#"
               class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 md:hover:text-blue-500"
-              id="menuSocial"
+              id="socialMenu"
               >Social</router-link
             >
           </li>
           <li>
-            <a
-              href="#"
+            <router-link :to="{ name: 'about-us' }"
               class="block py-2 pl-3 pr-4 text-white  rounded md:bg-transparent md:p-0 md:hover:text-blue-500"
-              >Sobre Nosotros</a
+              id="sobreNosotrosMenu"
+              >Sobre nosotros</router-link
             >
           </li>
           
