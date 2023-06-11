@@ -2,7 +2,6 @@
   <div class="">
     <div class="p-1 shadow mt-4">
 
-      <template v-if="this.coleccionesPersonalizadas.length > 0">
         <div class="bg-gray-900 mt-8 flex items-center justify-center">
           <div
             class="bg-gray-800 w-full flex-1 flex flex-col space-y-5 lg:space-y-0 lg:flex-row lg:space-x-10 p-6 my-2 mx-4 rounded-2xl"
@@ -130,7 +129,6 @@
             </div>
           </div>
         </div>
-      </template>
 
 
       <template v-if="this.coleccionesPredeterminadas.length > 0">
@@ -520,7 +518,7 @@ export default {
           if (response.data === "OK") {
             // se ha podido modificar :)
             this.toggleColeccionModal();
-            toast.success('¡La Coleccion se ha creado correctamente y se ha insertado el juego!', { 
+            toast.success('¡La Coleccion se ha creado correctamente!', { 
   position: toast.POSITION.TOP_CENTER, 
   theme: 'dark',
   autoClose: 2000,

@@ -3,14 +3,26 @@
     <div class="p-6 shadow mt-24">
       <div class="grid grid-cols-1 md:grid-cols-3">
         <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 text-center order-last md:order-first mt-20 md:mt-0">
-          <div>
-            <p class="font-bold text-gray-200 text-xl">22</p>
+          <router-link
+                        :to="{
+                          name: 'followers',
+                          params: {
+                            id: this.$route.params.id ? this.$route.params.id : 1,
+                          },
+                        }">
+            <p class="font-bold text-gray-200 text-xl">{{ this.seguidores? this.seguidores : "-"}}</p>
             <p class="text-gray-400 mb-4 md:mb-0">Seguidores</p>
-          </div>
-          <div>
-            <p class="font-bold text-gray-200 text-xl">10</p>
+          </router-link>
+          <router-link
+                        :to="{
+                          name: 'follows',
+                          params: {
+                            id: this.$route.params.id ? this.$route.params.id : 1,
+                          },
+                        }">
+            <p class="font-bold text-gray-200 text-xl">{{this.seguidos? this.seguidos : "-"}}</p>
             <p class="text-gray-400 mb-4 md:mb-0">Seguidos</p>
-          </div>
+          </router-link>
           <div v-bind:class="{ 'cursor-pointer': existeTerminado }" @click="scrollToAnchor('terminado')">
             <p class="font-bold text-gray-200 text-xl">{{ this.coleccionesPredeterminadas.filter(coleccion => coleccion.nombre === "Terminado").length }}</p>
             <p class="text-gray-400">Terminados</p>
@@ -28,8 +40,9 @@
             Editar Perfil
           </button>
 
-          <button @click="seguirJugador" v-if="this.$route.params.id !== obtenerID"
-            class="mx-auto text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+          <button @click="seguirEliminarJugador" v-if="this.$route.params.id !== obtenerID"
+            id="btnSeguir"
+          class="mx-auto text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
             Seguir
           </button>
         </div>
@@ -406,17 +419,6 @@
       </template>
 
 
-      <div class="mt-12 flex flex-col justify-center">
-        <p class="text-gray-600 text-center font-light lg:px-16">
-          An artist of considerable range, Ryan — the name taken by
-          Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and
-          records all of his own music, giving it a warm, intimate feel with a
-          solid groove structure. An artist of considerable range.
-        </p>
-        <button class="text-indigo-500 py-2 px-4 font-medium mt-4">
-          Show more
-        </button>
-      </div>
     </div>
   </div>
 
@@ -608,7 +610,8 @@ export default {
       coleccionesPersonalizadas: [],
       coleccionesPredeterminadas: [],
       juegosColecciones: reactive({}), // Objeto reactivo para almacenar los juegos de las coleccionesPredeterminadas
-
+      seguidores: 0,
+      seguidos: 0,
     };
   },
 
@@ -616,6 +619,9 @@ export default {
     this.conseguirPerfil()
       .then(() => {
         // Se cumple la condición (credenciales válidas)
+        this.comprobarSiSigues();
+        this.comprobarSeguidores();
+        this.comprobarSeguidos();
         this.configurarEditarModal();
         this.cargarEditarPerfil();
         this.obtenerImagenPerfil();
@@ -740,19 +746,7 @@ this.$root.$refs.navbarRef.conseguirPerfil();
         });
 
     },
-    seguirJugador() {
-      if (Cookies.get("isLoggedIn")) {
-        console.log("a");
-      } else {
-        toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
-  position: toast.POSITION.TOP_CENTER, 
-  theme: 'dark',
-  autoClose: 2000,
-  closeOnClick: true,
-  pauseOnHover: false,
-});
-      }
-    },
+   
     formattedFechaCreacion(fecha_creacion) {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (fecha_creacion) {
@@ -886,6 +880,55 @@ for (let e = 0; e < juegosElements2.length; e++) {
           console.error(error);
         });
     },
+    async comprobarSeguidores() {
+      await axios.post(
+            "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/comprobarSeguidores.php",
+            {
+              id: this.$route.params.id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data + "gg");
+            if (response.data !== "Errornull") {
+              const jsonData = JSON.stringify(response.data);
+              this.seguidores = JSON.parse(jsonData);
+              console.log(this.seguidores);
+            } 
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    },
+
+    async comprobarSeguidos() {
+      await axios.post(
+            "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/comprobarSeguidos.php",
+            {
+              id: this.$route.params.id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            if (response.data !== "Errornull") {
+              const jsonData = JSON.stringify(response.data);
+              this.seguidos = JSON.parse(jsonData);
+              console.log(this.seguidos);
+            } 
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    },
     handleFechaNacChange(event) {
       const fecha = moment(event.target.value);
       const fechaMoment = moment(fecha, "DD/MM/YYYY");
@@ -940,6 +983,91 @@ for (let e = 0; e < juegosElements2.length; e++) {
             reject(false); // Rechaza la promesa con false en caso de error
           });
       });
+    },
+
+    async comprobarSiSigues() {
+      if (Cookies.get("isLoggedIn"))
+      await axios.post(
+            "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/comprobarSiSigues.php",
+            {
+              id: JSON.parse(Cookies.get("isLoggedIn")).id,
+              id_seguido: this.$route.params.id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            if (response.data == "Seguido") {
+            document.getElementById("btnSeguir").textContent = "Dejar de Seguir";
+            document.getElementById("btnSeguir").classList.remove("bg-blue-400");
+            document.getElementById("btnSeguir").classList.remove("hover:bg-red-500");
+
+            document.getElementById("btnSeguir").classList.add("bg-red-500");
+            document.getElementById("btnSeguir").classList.add("hover:bg-red-600");
+
+            } 
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    },
+
+    async seguirEliminarJugador() {
+      if (Cookies.get("isLoggedIn")) {
+        await axios
+        .post(
+          "https://www.ieslamarisma.net/proyectos/2023/javiergarcia/php/agregarEliminarSeguido.php",
+          {
+            id_seguidor: JSON.parse(Cookies.get("isLoggedIn")).id,
+            id_seguido: this.$route.params.id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          // Manejar la respuesta del servidor
+          console.log(response.data);
+          if (response.data === "Insertado") {
+            this.comprobarSeguidores();
+            // se ha podido registrar :)
+            document.getElementById("btnSeguir").textContent = "Dejar de Seguir";
+            document.getElementById("btnSeguir").classList.remove("bg-blue-400");
+            document.getElementById("btnSeguir").classList.remove("hover:bg-red-500");
+
+            document.getElementById("btnSeguir").classList.add("bg-red-500");
+            document.getElementById("btnSeguir").classList.add("hover:bg-red-600");
+
+          }  else if (response.data === "Eliminado") {
+            this.comprobarSeguidores();
+            document.getElementById("btnSeguir").textContent = "Seguir";
+            document.getElementById("btnSeguir").classList.remove("bg-red-500");
+            document.getElementById("btnSeguir").classList.remove("hover:bg-red-600");
+
+            document.getElementById("btnSeguir").classList.add("bg-blue-400");
+              document.getElementById("btnSeguir").classList.add("hover:bg-red-500");
+          }else {
+            // Las credenciales son incorrectas
+            console.log("error");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      } else {
+        toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+      }
     },
 
     async conseguirColeccionesPersonalizadas() {

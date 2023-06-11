@@ -352,6 +352,7 @@ export default {
       id_juegosColeccion: [],
       characterCount: 0,
       eresPropietario: false,
+      haCambiadoDeImagen: false,
     };
   },
 
@@ -367,6 +368,31 @@ export default {
       };
     },
   },
+  beforeRouteLeave(to, from, next) {
+    const unsavedChanges = this.comprobarSiHasRealizadoCambios();
+    
+    if (unsavedChanges) {
+      const confirmMessage = '¿Estás seguro de que quieres salir sin haber guardado los cambios?';
+
+      if (confirm(confirmMessage)) {
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
+  },
+
+  created() {
+  window.addEventListener('beforeunload', this.handleBeforeUnload);
+  window.addEventListener('unload', this.handleUnload);
+},
+
+beforeUnmount() {
+  window.removeEventListener('beforeunload', this.handleBeforeUnload);
+  window.removeEventListener('unload', this.handleUnload);
+},
 
   mounted() {
     this.conseguirInformacionColeccion().then(async () => {
@@ -428,6 +454,17 @@ export default {
           console.error(error);
         });
     },
+    handleBeforeUnload(event) {
+    const unsavedChanges = this.comprobarSiHasRealizadoCambios();
+
+    if (unsavedChanges) {
+      event.returnValue = '¿Estás seguro de que quieres salir sin haber guardado los cambios?';
+    }
+  },
+
+  handleUnload() {
+    // Realizar acciones de limpieza o guardar datos si es necesario
+  },
     comprobarSiEresPropietario() {
       if (Cookies.get("isLoggedIn")) {
         const id_usuario_coleccion = this.infoColeccion[0].id_usuario;
@@ -439,6 +476,41 @@ export default {
         }
       } else {
         // El código cuando la cookie 'isLoggedIn' no está presente
+      }
+    },
+    comprobarSiHasRealizadoCambios() {
+      const idsJuegosEnColeccion = [];
+    const idsQueEstabanEnColeccion = [];
+
+      //ids de los juegos presentes en la pagina
+      for (const juego in this.juegosEnColeccion) {
+        idsJuegosEnColeccion.push(String(this.juegosEnColeccion[juego].id));
+      }
+
+      //ids de los juegos antes de modificar en la pagina
+      for (const juego2 in this.infoColeccion) {
+        idsQueEstabanEnColeccion.push(this.infoColeccion[juego2].id_juego);
+      }
+
+      const idsJuegosEnColeccionString = JSON.stringify(idsJuegosEnColeccion);
+      const idsQueEstabanEnColeccionString = JSON.stringify(
+        idsQueEstabanEnColeccion
+      );
+      console.log(idsJuegosEnColeccionString);
+      console.log(idsQueEstabanEnColeccionString);
+      console.log("si " + this.haCambiadoDeImagen);
+      if (this.infoColeccion[0].personalizada == '1')
+      if (idsJuegosEnColeccionString === idsQueEstabanEnColeccionString && this.infoColeccion[0].nombre == this.nombre &&  this.infoColeccion[0].descripcion == this.descripcion && !this.haCambiadoDeImagen || idsQueEstabanEnColeccionString === '[null]' && idsJuegosEnColeccionString === "[]" && this.infoColeccion[0].nombre == this.nombre &&  this.infoColeccion[0].descripcion == this.descripcion && !this.haCambiadoDeImagen) {
+        return false;
+      } else {
+        return true;
+      }
+      else if (this.infoColeccion[0].personalizada == '0')
+      if (idsJuegosEnColeccionString === idsQueEstabanEnColeccionString  && !this.haCambiadoDeImagen || idsQueEstabanEnColeccionString === '[null]' && idsJuegosEnColeccionString === "[]"  && !this.haCambiadoDeImagen) {
+        console.log("Hola");
+        return false;
+      } else {
+        return true;
       }
     },
     eliminarJuegoColeccion() {
@@ -657,6 +729,7 @@ contarCaracteresDescripcion(event) {
       this.search_games = response.data.results;
     },
     handleImageChange(event) {
+    this.haCambiadoDeImagen = true;
   const file = event.target.files[0];
   if (file) {
     const maxSize = 1024 * 1024; // 1 MB en bytes

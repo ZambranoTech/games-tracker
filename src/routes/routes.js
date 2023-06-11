@@ -13,6 +13,8 @@ import ColeccionComponent from '../components/ColeccionComponent.vue'
 import ColeccionEditarComponent from '../components/ColeccionEditarComponent.vue'
 import ColeccionesComponent from '../components/ColeccionesComponent.vue'
 import SocialComponent from '../components/SocialComponent.vue'
+import SeguidosComponent from '../components/SeguidosComponent.vue'
+import SeguidoresComponent from '../components/SeguidoresComponent.vue'
 
 import navigationCount from '../logica/navigationCount.js';
 
@@ -51,6 +53,12 @@ const routes = [
     },
     {
         path: '/social', component: SocialComponent, name:"social"
+    },
+    {
+        path: '/perfil/:id/seguidos', component: SeguidosComponent, name:"follows"
+    },
+    {
+        path: '/perfil/:id/seguidores', component: SeguidoresComponent, name:"followers"
     },
 ]
 
