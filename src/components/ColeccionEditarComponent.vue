@@ -291,12 +291,13 @@
                     <div
                       class="absolute top-2 left-4 text-white/20 inline-flex items-center text-xs"
                     >
-                      <input
-                        :id="juego.id"
-                        :value="juego.id"
-                        type="checkbox"
-                        class="w-4 h-4 text-blue-600 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
-                      />
+                    <input
+    :id="juego.id"
+    :value="juego.id"
+    type="checkbox"
+    class="w-4 h-4 text-blue-600 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
+    @change="handleCheckbox(juego.id)"
+  />
                     </div>
                   </div>
               </template>
@@ -328,6 +329,8 @@ import { reactive } from "vue";
 import Cookies from "js-cookie";
 import navigationCount from "../logica/navigationCount";
 import Compressor from 'compressorjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 
 export default {
@@ -353,6 +356,7 @@ export default {
       characterCount: 0,
       eresPropietario: false,
       haCambiadoDeImagen: false,
+      guardado: false,
     };
   },
 
@@ -465,6 +469,9 @@ beforeUnmount() {
   handleUnload() {
     // Realizar acciones de limpieza o guardar datos si es necesario
   },
+  handleCheckbox(id_juego) {
+      document.getElementById(id_juego).checked = !document.getElementById(id_juego).checked;
+    },
     comprobarSiEresPropietario() {
       if (Cookies.get("isLoggedIn")) {
         const id_usuario_coleccion = this.infoColeccion[0].id_usuario;
@@ -479,6 +486,7 @@ beforeUnmount() {
       }
     },
     comprobarSiHasRealizadoCambios() {
+     if (!this.guardado) {
       const idsJuegosEnColeccion = [];
     const idsQueEstabanEnColeccion = [];
 
@@ -512,11 +520,23 @@ beforeUnmount() {
       } else {
         return true;
       }
+    } else {
+      return false;
+    }
     },
     eliminarJuegoColeccion() {
     // Obtener todos los elementos <input> de tipo checkbox que estén marcados
 const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
 
+if (checkboxes.length <= 0) {
+  toast.warning('¡Debes de seleccionar algun juego!', { 
+  position: toast.POSITION.TOP_CENTER, 
+  theme: 'dark',
+  autoClose: 2000,
+  closeOnClick: true,
+  pauseOnHover: false,
+});
+}
 // Obtener los valores de los checkboxes seleccionados utilizando el método map
 const values = Array.from(checkboxes).map((checkbox) => checkbox.value);
 console.log(values);
@@ -547,7 +567,7 @@ contarCaracteresDescripcion(event) {
       document.getElementById(id).checked = true;
     },
     guardarCambios() {
-      
+      this.guardado = true;
       const idsJuegosEnColeccion = [];
       const idsQueEstabanEnColeccion = [];
 

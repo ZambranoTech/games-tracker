@@ -118,7 +118,7 @@ const activeTab = ref("first");
       </div>
     </div>
 
-    <div class="ms-5 mt-6 md:w-[800px] 2xl:w-[1100px]">
+    <div class="md:ms-4 mt-6 md:w-[800px] 2xl:w-[1095px] ">
       <div class="info-basica lg:w-2xl">
         <h1 ref="gameTitle" class="font font-bold text-6xl" style="word-wrap: break-word" :class="{'lg:text-6xl': isMultiLine === 1 || isMultiLine === 2, 'lg:text-5xl': isMultiLine >= 3}">          
           {{ game.name }}

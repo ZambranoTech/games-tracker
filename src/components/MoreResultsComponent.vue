@@ -1,7 +1,7 @@
 <template>
-    <h3 class="uppercase text-yellow-500 font-semibold text-lg">RESULTADOS DE LA BUSQUEDA: {{ this.$route.params.busqueda }}</h3>
+    <h3 class="text-center md:text-start uppercase text-yellow-500 font-semibold text-lg">RESULTADOS DE LA BUSQUEDA: {{ this.$route.params.busqueda }}</h3>
       <div class="grid sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-8 ">
-        <GameItem v-for="game in this.games" :key="game.id" :game="game"/>
+        <GameItem v-for="game in this.games" :key="game.id" :game="game" class="mx-auto"/>
     </div>
 
 

@@ -367,17 +367,26 @@
             console.log(response.data);
             if (response.data === "Insertado") {
               // se ha podido registrar :)
-              document.getElementById(id_seguido).textContent = "Dejar de Seguir";
-            }  else if (response.data === "Eliminado") {
-              document.getElementById(id_seguido).textContent = "Seguir";
-            }else {
-              // Las credenciales son incorrectas
-              console.log("error");
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+            document.getElementById(id_seguido).textContent = "Dejar de Seguir";
+            this.jugadoresSeguidores.find(jugador => jugador.id === id_seguido).num_seguidores = parseInt(this.jugadoresSeguidores.find(jugador => jugador.id === id_seguido).num_seguidores, 10) + 1;
+          }  else if (response.data === "Eliminado") {
+            const jugador = this.jugadoresSeguidores.find(jugador => jugador.id === id_seguido);
+            console.log("XD " + jugador.num_seguidores)
+if (jugador && jugador.num_seguidores != 1) {
+  jugador.num_seguidores -= 1;
+} else {
+  console.log("hola");
+  jugador.num_seguidores = "0";
+}
+            document.getElementById(id_seguido).textContent = "Seguir";
+          }else {
+            // Las credenciales son incorrectas
+            console.log("error");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
         } else {
           toast.warning('¡Debes iniciar sesión para realizar esta acción!', { 
     position: toast.POSITION.TOP_CENTER, 
