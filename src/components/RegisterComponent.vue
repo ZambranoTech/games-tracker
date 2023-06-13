@@ -363,6 +363,7 @@ import Datepicker from 'flowbite-datepicker/Datepicker';
 import Compressor from 'compressorjs';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import Cookies from "js-cookie";
 
 export default {
   data() {
@@ -436,10 +437,15 @@ iconCoincidirClass() {
 },
   },
   mounted(){
+    if (Cookies.get("isLoggedIn")) {
+      this.$router.replace({ name: 'home' })
+    }
+
     const datepickerEl = document.getElementById('inputFecha');
 new Datepicker(datepickerEl, {
     autohide: true,
 });
+
   },
   methods: {
     submitForm() {

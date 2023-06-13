@@ -160,6 +160,11 @@ export default {
       showPassword: false,
     };
   },
+  mounted() {
+    if (Cookies.get("isLoggedIn")) {
+      this.$router.replace({ name: 'home' })
+    }
+  },
   methods: {
     verificarCredenciales() {
       // Realizar una solicitud HTTP POST a tu archivo PHP de verificación
