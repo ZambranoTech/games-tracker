@@ -87,7 +87,7 @@
               </div>
 
               <div
-                class="overflow-x-scroll pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexPersonalizada">
+                class="overflow-x-auto pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexPersonalizada">
                 <template v-for="(coleccion) in coleccionesPersonalizadas" :key="coleccion.id_coleccion">
                     <router-link :to="{
                       name: 'collection',
@@ -165,7 +165,7 @@
               </div>
 
               <div
-                class="overflow-x-scroll pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexQuiero">
+                class="overflow-x-auto pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexQuiero">
                 <template v-for="(coleccion) in coleccionesPredeterminadas" :key="coleccion.id_coleccion">
                   <template v-if="coleccion.nombre === 'Quiero'">
                     <template v-if="!juegosColecciones[coleccion.id_juego]">
@@ -263,7 +263,7 @@
               </div>
 
               <div
-                class="overflow-x-scroll pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexJugando">
+                class="overflow-x-auto pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexJugando">
                 <template v-for="(coleccion) in coleccionesPredeterminadas" :key="coleccion.id_coleccion">
                   <template v-if="coleccion.nombre === 'Jugando'">
                     <template v-if="!juegosColecciones[coleccion.id_juego]">
@@ -360,7 +360,7 @@
               </div>
 
               <div
-                class="overflow-x-scroll pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexTerminado">
+                class="overflow-x-auto pb-[14px] flex flex-row flex-nowrap flex-auto xmb-10 sm:mb-0 mt-2 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex-grow" id="flexTerminado">
                 <template v-for="(coleccion) in coleccionesPredeterminadas" :key="coleccion.id_coleccion">
                   <template v-if="coleccion.nombre === 'Terminado'">
                     <template v-if="!juegosColecciones[coleccion.id_juego]">
@@ -760,7 +760,7 @@ this.$root.$refs.navbarRef.conseguirPerfil();
             if (esUnaFila) {
             document.getElementById("flexQuiero").classList.remove("flex-wrap"); 
             document.getElementById("flexQuiero").classList.add("flex-nowrap"); 
-            document.getElementById("flexQuiero").classList.add("overflow-x-scroll"); 
+            document.getElementById("flexQuiero").classList.add("overflow-x-auto"); 
             let juegosElements = document.getElementsByClassName("juegos_q");
 for (let i = 0; i < juegosElements.length; i++) {
   juegosElements[i].classList.add("min-w-[300px]");
@@ -768,7 +768,7 @@ for (let i = 0; i < juegosElements.length; i++) {
           } else {
             document.getElementById("flexQuiero").classList.add("flex-wrap"); 
             document.getElementById("flexQuiero").classList.remove("flex-nowrap") 
-            document.getElementById("flexQuiero").classList.remove("overflow-x-scroll") 
+            document.getElementById("flexQuiero").classList.remove("overflow-x-auto") 
             let juegosElements2 = document.getElementsByClassName("juegos_q");
 for (let e = 0; e < juegosElements2.length; e++) {
   juegosElements2[e].classList.remove("min-w-[300px]");
@@ -780,7 +780,7 @@ for (let e = 0; e < juegosElements2.length; e++) {
             if (esUnaFila) {
             document.getElementById("flexJugando").classList.remove("flex-wrap"); 
             document.getElementById("flexJugando").classList.add("flex-nowrap"); 
-            document.getElementById("flexJugando").classList.add("overflow-x-scroll"); 
+            document.getElementById("flexJugando").classList.add("overflow-x-auto"); 
             let juegosElements = document.getElementsByClassName("juegos_j");
 for (let i = 0; i < juegosElements.length; i++) {
   juegosElements[i].classList.add("min-w-[300px]");
@@ -788,7 +788,7 @@ for (let i = 0; i < juegosElements.length; i++) {
           } else {
             document.getElementById("flexJugando").classList.add("flex-wrap"); 
             document.getElementById("flexJugando").classList.remove("flex-nowrap"); 
-            document.getElementById("flexJugando").classList.remove("overflow-x-scroll"); 
+            document.getElementById("flexJugando").classList.remove("overflow-x-auto"); 
 
             let juegosElements2 = document.getElementsByClassName("juegos_j");
 for (let e = 0; e < juegosElements2.length; e++) {
@@ -801,7 +801,7 @@ for (let e = 0; e < juegosElements2.length; e++) {
             if (esUnaFila) {
             document.getElementById("flexTerminado").classList.remove("flex-wrap"); 
             document.getElementById("flexTerminado").classList.add("flex-nowrap"); 
-            document.getElementById("flexTerminado").classList.add("overflow-x-scroll"); 
+            document.getElementById("flexTerminado").classList.add("overflow-x-auto"); 
             let juegosElements = document.getElementsByClassName("juegos_t");
 for (let i = 0; i < juegosElements.length; i++) {
   juegosElements[i].classList.add("min-w-[300px]");
@@ -809,7 +809,7 @@ for (let i = 0; i < juegosElements.length; i++) {
           } else {
             document.getElementById("flexTerminado").classList.add("flex-wrap"); 
             document.getElementById("flexTerminado").classList.remove("flex-nowrap"); 
-            document.getElementById("flexTerminado").classList.remove("overflow-x-scroll"); 
+            document.getElementById("flexTerminado").classList.remove("overflow-x-auto"); 
             let juegosElements2 = document.getElementsByClassName("juegos_t");
 for (let e = 0; e < juegosElements2.length; e++) {
   juegosElements2[e].classList.remove("min-w-[300px]");
@@ -822,7 +822,7 @@ for (let e = 0; e < juegosElements2.length; e++) {
             if (esUnaFila) {
             document.getElementById("flexPersonalizada").classList.remove("flex-wrap"); 
             document.getElementById("flexPersonalizada").classList.add("flex-nowrap"); 
-            document.getElementById("flexPersonalizada").classList.add("overflow-x-scroll"); 
+            document.getElementById("flexPersonalizada").classList.add("overflow-x-auto"); 
             let juegosElements = document.getElementsByClassName("juegos_p");
 for (let i = 0; i < juegosElements.length; i++) {
   juegosElements[i].classList.add("min-w-[300px]");
@@ -830,7 +830,7 @@ for (let i = 0; i < juegosElements.length; i++) {
           } else {
             document.getElementById("flexPersonalizada").classList.add("flex-wrap"); 
             document.getElementById("flexPersonalizada").classList.remove("flex-nowrap"); 
-            document.getElementById("flexPersonalizada").classList.remove("overflow-x-scroll"); 
+            document.getElementById("flexPersonalizada").classList.remove("overflow-x-auto"); 
             let juegosElements2 = document.getElementsByClassName("juegos_p");
 for (let e = 0; e < juegosElements2.length; e++) {
   juegosElements2[e].classList.remove("min-w-[300px]");

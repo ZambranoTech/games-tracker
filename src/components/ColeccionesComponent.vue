@@ -471,6 +471,9 @@ export default {
         }
       }
     },
+    contarCaracteresDescripcion(event) {
+      this.characterCount2 = event.target.value.length;
+    },
     formattedFechaReg(fecha_reg) {
       const myMoment = moment; // Asigna moment a una nueva variable
       if (fecha_reg) {

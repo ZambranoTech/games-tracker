@@ -1,6 +1,7 @@
 <template>
     <h3 class="text-center md:text-start uppercase text-yellow-500 font-semibold text-lg">RESULTADOS DE LA BUSQUEDA: {{ this.$route.params.busqueda }}</h3>
-      <div class="grid sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-8 ">
+      <p v-if="games.length <= 0">No se han encontrado resultados</p>
+    <div class="grid sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-8 ">
         <GameItem v-for="game in this.games" :key="game.id" :game="game" class="mx-auto"/>
     </div>
 
